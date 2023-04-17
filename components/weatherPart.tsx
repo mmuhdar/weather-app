@@ -3,7 +3,7 @@ import axios from 'axios';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { MdOutlineLocationOn } from 'react-icons/md';
-import {ToastContainer, toast} from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import sunny from '../public/clear.svg';
@@ -20,14 +20,17 @@ const fetcher = (url: string, city: any) =>
 
 export default function WeatherPart() {
   const { city } = useRouter().query;
+  const localUrl = 'http://localhost:3000/history';
+  // const productionUrl = 'https://weather-app-server-elwt.vercel.app/history';
+  const railwayUrl = 'https://weather-app-server-production-5177.up.railway.app/history'
 
-  const { data, isLoading, error } = useSWR(
-    'https://weather-app-server-one.vercel.app/history',
-    (url) => fetcher(url, city)
+  const { data, isLoading, error } = useSWR(railwayUrl, (url) =>
+    fetcher(url, city)
   );
   const response = data?.data?.response;
   const weatherCode = response?.current?.condition?.code;
-  const weather = (): string => {
+
+  const weather = () => {
     switch (weatherCode) {
       case 1000:
         return sunny;
@@ -62,13 +65,9 @@ export default function WeatherPart() {
       case 1087 || 1276:
         return storm;
       default:
-        return snow;
+        return rain;
     }
   };
-
-  if(error) {
-    toast.error('Invalid City Name')
-  }
 
   return (
     <section className="weather-part flex justify-center items-center">
